@@ -33,6 +33,8 @@ namespace zipper
             string[] tabel_bitcodes = funcs.make_bitcodes(topoftree);
             string encoded_file_as_string = funcs.translate(file, tabel_bitcodes);
             byte[] encoded_file_as_bytes = funcs.convert_string_2_bytes(encoded_file_as_string); //xtrbits
+            string encoded_tree_as_string = funcs.save_tree(topoftree);
+            // byte[] encoded_tree_as_bytes = funcs.convert_string_2_bytes(encoded_tree_as_string);
         }
 
         class funcs
@@ -209,7 +211,6 @@ namespace zipper
                 while (s.Length % 8 != 0)
                 {
                     s += "0";
-
                 }
                 byte[] b = new byte[s.Length / 8 + 1];
                 string temp;
@@ -217,7 +218,7 @@ namespace zipper
                 for (int i = 0; i < b.Length - 1; i++)
                 {
                     temp = "";
-                    for (int j = i * 8; j < i *8 + 8; j++)
+                    for (int j = i * 8; j < i * 8 + 8; j++)
                     {
                         temp += s[j];
                     }
@@ -238,6 +239,56 @@ namespace zipper
                     }
                     start /= 2;
                 }
+                return b;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <algo>
+            ///                            (0,9)
+            ///                         (97,3)(0,6)
+            ///                             (0,3) (98,3)
+            ///                         (100,1)(99,2)
+            /// 
+            ///  our convention
+            ///  NL:  0   L,R
+            ///  L :  1   save relevant data as  (8) bits
+            ///  
+            ///  s="01[97]001[100]1[99]1[98]";
+            ///  s="01[97]001[100]1[99]1[98]";
+            /// 
+            ///                            (0,0)
+            ///                         (97,0)
+            /// 
+            /// </algo>
+            internal static string save_tree(node topoftree)
+            {
+                piet = "";
+                recurse_save_down(topoftree);
+                return piet;
+            }
+
+            static string piet = "";
+
+
+            private static void recurse_save_down(node current)
+            {
+                if (current.L == null)
+                {
+                    piet += "1";
+                    piet += byte2_8bits(current.b);
+                }
+                else
+                {
+                    piet += "0";
+                    recurse_save_down(current.L);
+                    recurse_save_down(current.R);
+                }
+            }
+
+            private static string byte2_8bits(byte b)
+            {
                 return b;
             }
         }
